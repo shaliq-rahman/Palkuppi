@@ -5,3 +5,14 @@ out
 *.tsbuildinfo
 next-env.d.ts
 .env*.local
+
+# secrets: never commit
+.env
+.env.*
+!.env.local.example
+*-admin-sdk*.json
+*serviceAccount*.json
+*firebase-adminsdk*.json
+
+# local copy of the Firebase web config
+appconfig

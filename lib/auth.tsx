@@ -1,82 +1,94 @@
 "use client";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { hashPassword } from "./sha256";
+import {
+  createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword,
+  signOut, updateProfile, type User as FirebaseUser,
+} from "firebase/auth";
+import { firebaseReady, getFirebase } from "./firebase";
 
-type Account = { username: string; name: string; salt: string; hash: string };
-export type User = { username: string; name: string };
-
-const USERS_KEY = "palkuppi-users";
-const SESSION_KEY = "palkuppi-session";
-const LEGACY_DATA_KEY = "milk-tracker-v1";
-export const dataKey = (username: string) => `milk-tracker-v1:${username}`;
+export type User = { uid: string; email: string; name: string };
 
 type Ctx = {
   ready: boolean;
+  configured: boolean;
   user: User | null;
-  hasAccounts: boolean;
-  signUp: (name: string, username: string, password: string) => string | null;
-  logIn: (username: string, password: string) => string | null;
-  logOut: () => void;
+  signUp: (name: string, email: string, password: string) => Promise<string | null>;
+  logIn: (email: string, password: string) => Promise<string | null>;
+  resetPassword: (email: string) => Promise<string | null>;
+  logOut: () => Promise<void>;
 };
 const AuthContext = createContext<Ctx | null>(null);
 
-const readUsers = (): Account[] => {
-  try { return JSON.parse(localStorage.getItem(USERS_KEY) || "[]"); } catch { return []; }
-};
-const norm = (s: string) => s.trim().toLowerCase();
+const toUser = (u: FirebaseUser): User => ({ uid: u.uid, email: u.email ?? "", name: u.displayName || (u.email ?? "").split("@")[0] });
+
+/** Turn Firebase error codes into plain sentences. */
+export function authMessage(err: unknown): string {
+  const code = (err as { code?: string })?.code ?? "";
+  switch (code) {
+    case "auth/invalid-email": return "That email address doesn't look right.";
+    case "auth/missing-password": return "Please enter your password.";
+    case "auth/weak-password": return "Password must be at least 6 characters.";
+    case "auth/email-already-in-use": return "An account with this email already exists. Try logging in.";
+    case "auth/invalid-credential":
+    case "auth/wrong-password":
+    case "auth/user-not-found": return "Wrong email or password.";
+    case "auth/too-many-requests": return "Too many attempts. Wait a minute and try again.";
+    case "auth/network-request-failed": return "No connection. Check your internet and try again.";
+    case "auth/operation-not-allowed": return "Email/password sign-in isn't enabled in Firebase yet.";
+    default: return "Something went wrong. Please try again.";
+  }
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(!firebaseReady);
   const [user, setUser] = useState<User | null>(null);
-  const [hasAccounts, setHasAccounts] = useState(false);
 
   useEffect(() => {
-    const users = readUsers();
-    setHasAccounts(users.length > 0);
-    try {
-      const sess = JSON.parse(localStorage.getItem(SESSION_KEY) || "null") as { username: string } | null;
-      const acc = sess && users.find((u) => u.username === sess.username);
-      if (acc) setUser({ username: acc.username, name: acc.name });
-    } catch {}
-    setReady(true);
+    if (!firebaseReady) return;
+    const { auth } = getFirebase();
+    return onAuthStateChanged(auth, (u) => {
+      setUser(u ? toUser(u) : null);
+      setReady(true);
+    });
   }, []);
 
-  const signUp = useCallback((name: string, usernameRaw: string, password: string) => {
-    const username = norm(usernameRaw);
+  const signUp = useCallback(async (name: string, email: string, password: string) => {
     if (!name.trim()) return "Please enter your name.";
-    if (!/^[a-z0-9._-]{3,}$/.test(username)) return "Username needs 3+ letters or numbers (no spaces).";
-    if (password.length < 6) return "Password must be at least 6 characters.";
-    const users = readUsers();
-    if (users.some((u) => u.username === username)) return "That username is already taken.";
-    const salt = Math.random().toString(36).slice(2) + Date.now().toString(36);
-    const acc: Account = { username, name: name.trim(), salt, hash: hashPassword(password, salt) };
     try {
-      // The first account adopts any data saved before accounts existed.
-      const legacy = localStorage.getItem(LEGACY_DATA_KEY);
-      if (users.length === 0 && legacy && !localStorage.getItem(dataKey(username))) localStorage.setItem(dataKey(username), legacy);
-      localStorage.setItem(USERS_KEY, JSON.stringify([...users, acc]));
-      localStorage.setItem(SESSION_KEY, JSON.stringify({ username }));
-    } catch { return "Could not save your account on this device."; }
-    setHasAccounts(true);
-    setUser({ username, name: acc.name });
-    return null;
+      const { auth } = getFirebase();
+      const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      await updateProfile(cred.user, { displayName: name.trim() });
+      setUser(toUser({ ...cred.user, displayName: name.trim() } as FirebaseUser));
+      return null;
+    } catch (e) { return authMessage(e); }
   }, []);
 
-  const logIn = useCallback((usernameRaw: string, password: string) => {
-    const username = norm(usernameRaw);
-    const acc = readUsers().find((u) => u.username === username);
-    if (!acc || acc.hash !== hashPassword(password, acc.salt)) return "Wrong username or password.";
-    try { localStorage.setItem(SESSION_KEY, JSON.stringify({ username })); } catch {}
-    setUser({ username, name: acc.name });
-    return null;
+  const logIn = useCallback(async (email: string, password: string) => {
+    try {
+      const { auth } = getFirebase();
+      await signInWithEmailAndPassword(auth, email.trim(), password);
+      return null;
+    } catch (e) { return authMessage(e); }
   }, []);
 
-  const logOut = useCallback(() => {
-    try { localStorage.removeItem(SESSION_KEY); } catch {}
+  const resetPassword = useCallback(async (email: string) => {
+    if (!email.trim()) return "Enter your email above first.";
+    try {
+      const { auth } = getFirebase();
+      await sendPasswordResetEmail(auth, email.trim());
+      return null;
+    } catch (e) { return authMessage(e); }
+  }, []);
+
+  const logOut = useCallback(async () => {
+    try { await signOut(getFirebase().auth); } catch {}
     setUser(null);
   }, []);
 
-  const value = useMemo(() => ({ ready, user, hasAccounts, signUp, logIn, logOut }), [ready, user, hasAccounts, signUp, logIn, logOut]);
+  const value = useMemo(
+    () => ({ ready, configured: firebaseReady, user, signUp, logIn, resetPassword, logOut }),
+    [ready, user, signUp, logIn, resetPassword, logOut]
+  );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

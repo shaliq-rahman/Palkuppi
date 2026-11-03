@@ -5,20 +5,31 @@ import { Art } from "@/components/Icons";
 import { CLOUDS, FLOWERS, PASTURE } from "@/components/art";
 
 export default function LoginPage() {
-  const { hasAccounts, signUp, logIn } = useAuth();
-  const [mode, setMode] = useState<"login" | "signup">(hasAccounts ? "login" : "signup");
+  const { signUp, logIn, resetPassword } = useAuth();
+  const [mode, setMode] = useState<"login" | "signup">("login");
   const [name, setName] = useState("");
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [show, setShow] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
   const signup = mode === "signup";
 
-  const submit = (e: FormEvent) => {
+  const submit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(signup ? signUp(name, username, password) : logIn(username, password));
+    if (busy) return;
+    setError(null); setInfo(null); setBusy(true);
+    const err = signup ? await signUp(name, email, password) : await logIn(email, password);
+    setBusy(false);
+    if (err) setError(err);
   };
-  const switchMode = () => { setMode(signup ? "login" : "signup"); setError(null); setPassword(""); };
+  const forgot = async () => {
+    setError(null); setInfo(null);
+    const err = await resetPassword(email);
+    if (err) setError(err); else setInfo("Password reset email sent. Check your inbox.");
+  };
+  const switchMode = () => { setMode(signup ? "login" : "signup"); setError(null); setInfo(null); setPassword(""); };
 
   return (
     <div className="app login-app">
@@ -49,8 +60,8 @@ export default function LoginPage() {
             </label>
           )}
           <label className="field">
-            <span className="field-l">Username</span>
-            <span className="field-box"><input type="text" autoComplete="username" autoCapitalize="none" spellCheck={false} value={username} onChange={(e) => setUsername(e.target.value)} placeholder="yourname" /></span>
+            <span className="field-l">Email</span>
+            <span className="field-box"><input type="email" inputMode="email" autoComplete="email" autoCapitalize="none" spellCheck={false} value={email} onChange={(e) => setEmail(e.target.value)} placeholder="you@example.com" /></span>
           </label>
           <label className="field">
             <span className="field-l">Password</span>
@@ -60,14 +71,16 @@ export default function LoginPage() {
             </span>
           </label>
           {error && <div className="form-error" role="alert">{error}</div>}
-          <button type="submit" className="btn btn-primary btn-xl">{signup ? "Create account" : "Log in"}</button>
+          {info && <div className="form-info" role="status">{info}</div>}
+          {!signup && <button type="button" className="link-btn forgot" onClick={forgot}>Forgot password?</button>}
+          <button type="submit" className="btn btn-primary btn-xl" disabled={busy}>{busy ? "Please wait…" : signup ? "Create account" : "Log in"}</button>
         </form>
 
         <p className="login-switch">
           {signup ? "Already have an account?" : "New here?"}{" "}
           <button type="button" className="link-btn" onClick={switchMode}>{signup ? "Log in" : "Create account"}</button>
         </p>
-        <p className="login-note">Your records stay on this device.</p>
+        <p className="login-note">Your records are saved to your account, so they follow you to any device.</p>
       </main>
     </div>
   );

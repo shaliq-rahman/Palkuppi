@@ -26,3 +26,22 @@ components/     BottomNav, Shell, Icons, art (illustrations)
 lib/            dates.ts, calc.ts (totals, billing cycle), store.tsx (state + localStorage)
 public/         milk images
 ```
+
+## Firebase setup (login + saving records online)
+
+1. Firebase console -> **Project settings -> Your apps -> Web app** -> copy the config.
+2. Copy `env.example.txt` to `.env.local` and paste the six values. Restart `npm run dev`.
+3. **Authentication -> Sign-in method -> Email/Password** must be enabled.
+4. **Firestore Database -> Rules**: paste the contents of `firestore.rules` and Publish.
+   Each person can then read and write only their own record (`users/{uid}`).
+
+Never put a service-account / Admin SDK key (`*-admin-sdk*.json`) in this app or in Git; the website only needs the web config above.
+
+
+## Deploying (for example on Vercel)
+
+1. Push the project to GitHub (`node_modules`, `.next` and all `.env*` files are git-ignored).
+2. Import the repo in Vercel. Framework: Next.js (auto-detected).
+3. **Project Settings -> Environment Variables**: add the six `NEXT_PUBLIC_FIREBASE_*` names from `.env.production` with your values (all environments). Redeploy.
+4. **Firebase console -> Authentication -> Settings -> Authorized domains**: add your deployed domain (for example `your-app.vercel.app`). Without this, login fails on the live site.
+5. Make sure the Firestore rules from `firestore.rules` are published.

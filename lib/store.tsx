@@ -1,7 +1,8 @@
 "use client";
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { addDays, todayISO } from "./dates";
-import { dataKey } from "./auth";
+import { doc, onSnapshot, serverTimestamp, setDoc } from "firebase/firestore";
+import { getFirebase } from "./firebase";
 import { amountDue, previewAfter, round2 } from "./calc";
 
 export type Mark = "taken" | "skipped";
@@ -39,32 +40,78 @@ type Ctx = {
   pay: (amount: number, paidOn: string) => boolean;
   saveSettings: (rate: number, startDate: string) => void;
   resetAll: () => void;
+  /** Set when saving to / loading from Firebase fails (for example, Firestore rules not published). */
+  syncError: string | null;
 };
 
 const StoreContext = createContext<Ctx | null>(null);
 const uid = () => Math.random().toString(36).slice(2, 10);
 
+const LEGACY_KEY = "milk-tracker-v1"; // data saved on this device before accounts moved to Firebase
+const cacheKey = (uid: string) => `milk-tracker-cache:${uid}`;
+
 export function StoreProvider({ children, userKey }: { children: ReactNode; userKey: string }) {
-  const KEY = dataKey(userKey);
+  const uidKey = userKey;
   const [state, setState] = useState<State>(DEFAULT);
   const [ready, setReady] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
   const [now, setNow] = useState<Date>(() => new Date());
+  const stateRef = useRef<State>(DEFAULT);
+  const loaded = useRef(false);        // true once the first Firestore snapshot has arrived
+  const lastSynced = useRef("");       // JSON of the last state known to be in Firestore (avoids write loops)
+  stateRef.current = state;
 
+  // Load + live-sync this user's data from Firestore (users/{uid}.state).
   useEffect(() => {
+    let cancelled = false;
+    loaded.current = false;
     try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) setState({ ...DEFAULT, ...JSON.parse(raw) });
+      const cached = localStorage.getItem(cacheKey(uidKey));
+      if (cached) setState({ ...DEFAULT, ...JSON.parse(cached) });
     } catch {}
-    setReady(true);
-  }, [KEY]);
+    const { db } = getFirebase();
+    const ref = doc(db, "users", uidKey);
+    const unsub = onSnapshot(
+      ref,
+      { includeMetadataChanges: false },
+      (snap) => {
+        if (cancelled) return;
+        setSyncError(null);
+        if (snap.metadata.hasPendingWrites) return; // our own write echoing back
+        const remote = snap.exists() ? (snap.data().state as Partial<State> | undefined) : undefined;
+        if (remote) {
+          const next = { ...DEFAULT, ...remote } as State;
+          lastSynced.current = JSON.stringify(next);
+          if (lastSynced.current !== JSON.stringify(stateRef.current)) setState(next);
+        } else {
+          // First sign-in: bring over anything saved on this device before, otherwise start fresh.
+          let initial = DEFAULT;
+          try { const legacy = localStorage.getItem(LEGACY_KEY); if (legacy) initial = { ...DEFAULT, ...JSON.parse(legacy) }; } catch {}
+          lastSynced.current = JSON.stringify(initial); setState(initial);
+          setDoc(ref, { state: initial, updatedAt: serverTimestamp() }).catch((e) => setSyncError(describe(e)));
+        }
+        loaded.current = true;
+        setReady(true);
+      },
+      (err) => { if (!cancelled) { setSyncError(describe(err)); loaded.current = true; setReady(true); } }
+    );
+    return () => { cancelled = true; unsub(); };
+  }, [uidKey]);
 
+  // Save changes made on this device (small delay so quick taps are sent together).
   useEffect(() => {
-    if (ready) {
-      try {
-        localStorage.setItem(KEY, JSON.stringify(state));
-      } catch {}
-    }
-  }, [state, ready, KEY]);
+    if (!loaded.current) return;
+    const json = JSON.stringify(state);
+    if (json === lastSynced.current) { setSyncError(null); return; } // already matches what is saved
+    try { localStorage.setItem(cacheKey(uidKey), json); } catch {}
+    const t = setTimeout(() => {
+      const { db } = getFirebase();
+      setDoc(doc(db, "users", uidKey), { state, updatedAt: serverTimestamp() })
+        .then(() => { lastSynced.current = json; setSyncError(null); })
+        .catch((e) => setSyncError(describe(e)));
+    }, 500);
+    return () => clearTimeout(t);
+  }, [state, uidKey]);
 
   useEffect(() => {
     const t = setInterval(() => setNow(new Date()), 30_000);
@@ -126,8 +173,8 @@ export function StoreProvider({ children, userKey }: { children: ReactNode; user
   const resetAll = useCallback(() => setState(DEFAULT), []);
 
   const value = useMemo<Ctx>(
-    () => ({ ready, state, today, now, setMark, setMarks, addBreak, endBreak, removeBreak, pay, saveSettings, resetAll }),
-    [ready, state, today, now, setMark, setMarks, addBreak, endBreak, removeBreak, pay, saveSettings, resetAll]
+    () => ({ ready, state, today, now, setMark, setMarks, addBreak, endBreak, removeBreak, pay, saveSettings, resetAll, syncError }),
+    [ready, state, today, now, setMark, setMarks, addBreak, endBreak, removeBreak, pay, saveSettings, resetAll, syncError]
   );
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
 }
@@ -138,3 +185,10 @@ export function useStore() {
   return ctx;
 }
 export { amountDue };
+
+function describe(err: unknown): string {
+  const code = (err as { code?: string })?.code ?? "";
+  if (code === "permission-denied") return "Can't save: Firestore rules don't allow this yet. Publish the rules from the README.";
+  if (code === "unavailable") return "Offline. Your changes are kept and will sync when you're back online.";
+  return "Couldn't sync with Firebase.";
+}

@@ -28,9 +28,9 @@ export default function SettingsPage() {
       <section className="card account">
         <div className="account-who">
           <span className="account-avatar" aria-hidden="true">{(user?.name || "?").slice(0, 1).toUpperCase()}</span>
-          <div><div className="card-title">{user?.name}</div><div className="muted">@{user?.username}</div></div>
+          <div><div className="card-title">{user?.name}</div><div className="muted">{user?.email}</div></div>
         </div>
-        <button className="btn btn-soft btn-sm" onClick={() => { logOut(); router.replace("/login"); }}>Log out</button>
+        <button className="btn btn-soft btn-sm" onClick={async () => { await logOut(); router.replace("/login"); }}>Log out</button>
       </section>
 
       <section className="card form theme-card">
