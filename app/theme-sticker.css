@@ -1,0 +1,116 @@
+/* Sticker theme (default): periwinkle, black outlines, cow spots. Scoped to html[data-theme="sticker"]. */
+html[data-theme="sticker"] {
+  --peri: #AEC3FA; --peri-light: #D3E0FD; --peri-pale: #EAF0FE;
+  --k: #0B0B0B; --ink: #0B0B0B; --sub: #33384f; --blue: #0B0B0B; --border: #0B0B0B;
+  --shadow: 4px 4px 0 #0B0B0B;
+  --font-d: "Fredoka", "Plus Jakarta Sans", system-ui, sans-serif;
+  --sky: #8FB4FF; --sky-light: #D6E4FF; --sun: #FFD84D; --sun-light: #FFF0A6;
+  --mint: #86E3B4; --mint-light: #CDF4E0; --coral: #FFA9BB; --coral-light: #FFD9E1;
+  --lilac: #CDB8FF; --lilac-light: #E6DCFF;
+  --tint: var(--sky-light); --tint-2: var(--peri-pale); --green: #0B0B0B; --green-bg: var(--mint-light);
+}
+html[data-theme="sticker"] body { background: #8fa8f0; }
+html[data-theme="sticker"] .app { background: var(--peri); }
+@media (min-width: 520px) {
+html[data-theme="sticker"] .app { border: 3px solid var(--k); box-shadow: 8px 8px 0 var(--k); }
+}
+html[data-theme="sticker"] .bg-glow { border-radius: 58% 42% 55% 45% / 48% 58% 42% 52%; background: var(--k); }
+html[data-theme="sticker"] .bg-glow-a { right: -34px; top: 150px; width: 110px; height: 80px; transform: rotate(-12deg); }
+html[data-theme="sticker"] .bg-glow-b { left: -40px; bottom: 150px; width: 120px; height: 92px; transform: rotate(18deg); }
+html[data-theme="sticker"] .app::before, html[data-theme="sticker"] .app::after { content: ""; position: absolute; pointer-events: none; background: #fff; border-radius: 52% 48% 60% 40% / 55% 45% 55% 45%; }
+html[data-theme="sticker"] .app::before { right: 30px; top: 40px; width: 64px; height: 48px; transform: rotate(10deg); opacity: .9; }
+html[data-theme="sticker"] .app::after { left: -20px; top: 60%; width: 70px; height: 52px; transform: rotate(-20deg); opacity: .9; }
+html[data-theme="sticker"] .card, html[data-theme="sticker"] .hero, html[data-theme="sticker"] .row-link, html[data-theme="sticker"] .mini-card, html[data-theme="sticker"] .nav, html[data-theme="sticker"] .month-bar, html[data-theme="sticker"] .notice, html[data-theme="sticker"] .save-row, html[data-theme="sticker"] .note-green, html[data-theme="sticker"] .empty {
+  border: 2.5px solid var(--k) !important; box-shadow: 4px 4px 0 var(--k) !important;
+}
+html[data-theme="sticker"] .hero { background: var(--sky); }
+html[data-theme="sticker"] .hero-pay { color: var(--k); background: var(--sun); border-radius: 24px; }
+html[data-theme="sticker"] .hero-pay .hero-label, html[data-theme="sticker"] .hero-pay .hero-sub, html[data-theme="sticker"] .hero-pay .hero-amount { color: var(--k); }
+html[data-theme="sticker"] .hero-glow { display: none; }
+html[data-theme="sticker"] .hero-pay::before { content: ""; position: absolute; left: 196px; top: -20px; width: 44px; height: 34px; background: var(--k); border-radius: 55% 45% 60% 40% / 50% 55% 45% 50%; transform: rotate(-10deg); }
+html[data-theme="sticker"] .hero-wave svg { opacity: .9; }
+html[data-theme="sticker"] /* cow scene: bold outlines like the logo */
+.scene-pasture svg [stroke="#C3D3EC"] { stroke: #0B0B0B; stroke-width: 2.4; }
+html[data-theme="sticker"] .h1, html[data-theme="sticker"] .card-title, html[data-theme="sticker"] .hero-amount, html[data-theme="sticker"] .cal-title, html[data-theme="sticker"] .opt-title, html[data-theme="sticker"] .opt-value, html[data-theme="sticker"] .btn, html[data-theme="sticker"] .nav-label, html[data-theme="sticker"] .mini-title, html[data-theme="sticker"] .detail-status, html[data-theme="sticker"] .save-v, html[data-theme="sticker"] .marked-text b { font-family: var(--font-d); }
+html[data-theme="sticker"] .h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.3px; }
+html[data-theme="sticker"] .hero-amount { font-weight: 700; letter-spacing: -0.5px; }
+html[data-theme="sticker"] .card-title { font-weight: 600; font-size: 17px; }
+html[data-theme="sticker"] .eyebrow, html[data-theme="sticker"] .hero-label { color: var(--k); font-weight: 700; }
+html[data-theme="sticker"] .hero-sub { color: var(--sub); }
+html[data-theme="sticker"] /* buttons: neutral (no colour) */
+.btn { border: 2.5px solid var(--k); box-shadow: none; font-weight: 600; font-size: 15px; letter-spacing: 0.1px; }
+html[data-theme="sticker"] .btn:active { transform: translate(1px, 1px); }
+html[data-theme="sticker"] .btn-primary { background: var(--k); color: #fff; }
+html[data-theme="sticker"] .btn-soft { background: #fff; color: var(--k); }
+html[data-theme="sticker"] .btn-soft svg { color: var(--k); }
+html[data-theme="sticker"] .btn-ghost { background: transparent; border-color: var(--k); color: var(--k); }
+html[data-theme="sticker"] .btn-danger { background: #fff; color: #b3261e; border-color: #b3261e; }
+html[data-theme="sticker"] .btn-xl { font-size: 18px; }
+html[data-theme="sticker"] .btn-xl.btn-primary { background: var(--k); color: #fff; box-shadow: 4px 4px 0 #fff; }
+html[data-theme="sticker"] .btn-xl.btn-primary:active { box-shadow: 1px 1px 0 #fff; }
+html[data-theme="sticker"] .btn.is-on { outline: 3px solid var(--k); outline-offset: 2px; }
+html[data-theme="sticker"] .btn.is-on.btn-soft { background: #efefef; }
+html[data-theme="sticker"] .btn:disabled { opacity: .5; box-shadow: none; }
+html[data-theme="sticker"] .btn:focus-visible, html[data-theme="sticker"] .nav-item:focus-visible, html[data-theme="sticker"] .day:focus-visible, html[data-theme="sticker"] .round-btn:focus-visible, html[data-theme="sticker"] .icon-btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; box-shadow: 0 0 0 5px var(--k); }
+html[data-theme="sticker"] .link-btn { color: var(--k); text-decoration: underline; text-underline-offset: 3px; }
+html[data-theme="sticker"] .blue { color: var(--k); }
+html[data-theme="sticker"] /* small parts */
+.icon-btn, html[data-theme="sticker"] .round-btn, html[data-theme="sticker"] .icon-mini { background: #fff; color: var(--k); border: 2.5px solid var(--k); box-shadow: 2px 2px 0 var(--k); }
+html[data-theme="sticker"] .icon-btn { box-shadow: 3px 3px 0 var(--k); }
+html[data-theme="sticker"] .head-tile { background: var(--lilac); border: 2.5px solid var(--k); box-shadow: 2px 2px 0 var(--k); }
+html[data-theme="sticker"] .row-ico { background: var(--sun-light); color: var(--k); border: 2.5px solid var(--k); box-shadow: 2px 2px 0 var(--k); }
+html[data-theme="sticker"] .chip { background: var(--sun-light); border: 2px solid var(--k); color: var(--k); }
+html[data-theme="sticker"] .chip svg, html[data-theme="sticker"] .row-link > svg, html[data-theme="sticker"] .kv-k svg { color: var(--k); }
+html[data-theme="sticker"] .notice { background: var(--sun-light); color: var(--k); }
+html[data-theme="sticker"] .dot { border: 2px solid var(--k); width: 12px; height: 12px; }
+html[data-theme="sticker"] .dot-green { background: var(--mint); }
+html[data-theme="sticker"] .dot-yellow { background: var(--sun); }
+html[data-theme="sticker"] .dot-gray { background: var(--coral); }
+html[data-theme="sticker"] .dot-violet { background: var(--lilac); }
+html[data-theme="sticker"] .mini-sub, html[data-theme="sticker"] .mini-sub.green { color: var(--sub); font-weight: 700; }
+html[data-theme="sticker"] /* nav */
+.nav { background: #fff; }
+html[data-theme="sticker"] .nav-item { color: var(--k); }
+html[data-theme="sticker"] .nav-item.active .nav-pill { background: var(--peri); color: var(--k); border: 2.5px solid var(--k); box-shadow: 2px 2px 0 var(--k); }
+html[data-theme="sticker"] .nav-item.active .nav-label { color: var(--k); font-weight: 700; }
+html[data-theme="sticker"] .nav-label { font-weight: 500; font-size: 12.5px; }
+html[data-theme="sticker"] /* calendar (status colours) */
+.day { font-family: var(--font-d); font-weight: 500; font-size: 16px; border: 2px solid transparent; color: var(--k); }
+html[data-theme="sticker"] .day-before { color: #6c7391; }
+html[data-theme="sticker"] .day-taken { background: var(--mint); color: var(--k); border-color: var(--k); font-weight: 600; }
+html[data-theme="sticker"] .day-skipped { background: var(--coral-light); border-color: var(--k); }
+html[data-theme="sticker"] .day-break { background: var(--lilac-light); color: var(--k); border: 2px dashed var(--k); }
+html[data-theme="sticker"] .day-unmarked { background: #fff; border: 2px dotted #5b6384; }
+html[data-theme="sticker"] .day-today { background: var(--sun); color: var(--k); border: 2.5px solid var(--k); box-shadow: 2px 2px 0 var(--k); font-weight: 700; }
+html[data-theme="sticker"] .day-today.day-taken { background: var(--mint); }
+html[data-theme="sticker"] .day-sel:not(.day-today) { border-color: var(--k); }
+html[data-theme="sticker"] .cal-wd { font-weight: 600; }
+html[data-theme="sticker"] .sw { border: 2px solid var(--k); }
+html[data-theme="sticker"] .sw-taken { background: var(--mint); }
+html[data-theme="sticker"] .sw-skipped { background: var(--coral-light); }
+html[data-theme="sticker"] .sw-break { background: var(--lilac-light); border-style: dashed; }
+html[data-theme="sticker"] .sw-today { background: var(--sun); }
+html[data-theme="sticker"] .legend, html[data-theme="sticker"] .summary { color: var(--k); font-weight: 600; }
+html[data-theme="sticker"] .detail-status, html[data-theme="sticker"] .detail-status.s-taken { color: var(--k); }
+html[data-theme="sticker"] /* pay / forms / status */
+.opt { border: 2px solid transparent; }
+html[data-theme="sticker"] .opt.on { background: var(--sun-light); border-color: var(--k); }
+html[data-theme="sticker"] .opt-value { color: var(--k); font-weight: 600; }
+html[data-theme="sticker"] .opt input[type="radio"], html[data-theme="sticker"] .check input, html[data-theme="sticker"] .opt input { accent-color: var(--k); }
+html[data-theme="sticker"] .opt-input { border: 2px solid var(--k); background: #fff; }
+html[data-theme="sticker"] .kv-row + .kv-row { border-top: 2px dashed #9aa6cf; }
+html[data-theme="sticker"] .field-box { background: #fff; border: 2.5px solid var(--k); color: var(--k); }
+html[data-theme="sticker"] .field-box input, html[data-theme="sticker"] .date-input { color: var(--k); }
+html[data-theme="sticker"] .field-l, html[data-theme="sticker"] .save-l, html[data-theme="sticker"] .save-s { color: var(--k); }
+html[data-theme="sticker"] .save-row, html[data-theme="sticker"] .note-green, html[data-theme="sticker"] .empty { background: var(--mint-light); color: var(--k); }
+html[data-theme="sticker"] .save-v { color: var(--k); font-weight: 600; }
+html[data-theme="sticker"] .hist-row { border-top: 2px dashed #9aa6cf; }
+html[data-theme="sticker"] .hist .card-title { margin-bottom: 4px; }
+html[data-theme="sticker"] .hist .card-title + .hist-row { border-top: none; }
+html[data-theme="sticker"] .month-bar { background: #fff; }
+html[data-theme="sticker"] .marked-ico { border: 2.5px solid var(--k); }
+html[data-theme="sticker"] .marked-ico.taken { background: var(--mint); color: var(--k); box-shadow: none; }
+html[data-theme="sticker"] .marked-ico.skipped { background: var(--coral); color: var(--k); }
+html[data-theme="sticker"] .account-avatar { background: var(--lilac); border: 2.5px solid var(--k); color: var(--k); }
+html[data-theme="sticker"] .form-error { background: #fff; border: 2px solid #b3261e; color: #b3261e; }
+html[data-theme="sticker"] .theme-opt.on { border-color: var(--k); background: var(--sun-light); }

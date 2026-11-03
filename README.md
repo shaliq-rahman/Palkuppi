@@ -1,4 +1,4 @@
-# Milk Tracker
+# Palkuppi
 
 Track the milk you take every day and what you owe the milkman. Built with Next.js (App Router) and TypeScript. Data is stored on the device (localStorage), so there is no backend to set up.
 
@@ -26,4 +26,3 @@ components/     BottomNav, Shell, Icons, art (illustrations)
 lib/            dates.ts, calc.ts (totals, billing cycle), store.tsx (state + localStorage)
 public/         milk images
 ```
-# DailyMilk
