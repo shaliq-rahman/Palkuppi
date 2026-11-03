@@ -40,7 +40,13 @@ export const fmtDay = (s: string) => {
   const d = parse(s);
   return `${d.getDate()} ${MON[d.getMonth()]}`;
 };
-export const fmtLong = (d: Date) => `${WD[d.getDay()]}, ${d.getDate()} ${MONTH_FULL[d.getMonth()]}`;
+export const monthsShort = MON;
+/** e.g. "5 Nov 2026" */
+export const fmtDate = (s: string) => {
+  const d = parse(s);
+  return `${d.getDate()} ${MON[d.getMonth()]} ${d.getFullYear()}`;
+};
+export const fmtLong =(d: Date) => `${WD[d.getDay()]}, ${d.getDate()} ${MONTH_FULL[d.getMonth()]}`;
 export const monthTitle = (year: number, month: number) => `${MONTH_FULL[month]} ${year}`;
 export const weekdays = WD;
 

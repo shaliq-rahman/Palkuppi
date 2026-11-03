@@ -114,3 +114,17 @@ html[data-theme="sticker"] .marked-ico.skipped { background: var(--coral); color
 html[data-theme="sticker"] .account-avatar { background: var(--lilac); border: 2.5px solid var(--k); color: var(--k); }
 html[data-theme="sticker"] .form-error { background: #fff; border: 2px solid #b3261e; color: #b3261e; }
 html[data-theme="sticker"] .theme-opt.on { border-color: var(--k); background: var(--sun-light); }
+
+/* date picker sheet */
+html[data-theme="sticker"] .dp-backdrop { background: rgba(11, 11, 11, 0.45); }
+html[data-theme="sticker"] .dp-sheet { border: 2.5px solid var(--k); border-bottom: none; box-shadow: none; }
+@media (min-width: 520px) { html[data-theme="sticker"] .dp-sheet { border-bottom: 2.5px solid var(--k); box-shadow: 6px 6px 0 var(--k); } }
+html[data-theme="sticker"] .dp-title, html[data-theme="sticker"] .dp-btn, html[data-theme="sticker"] .dp-item { font-family: var(--font-d); }
+html[data-theme="sticker"] .dp-title { font-weight: 600; font-size: 17px; }
+html[data-theme="sticker"] .dp-btn { color: var(--k); font-weight: 500; }
+html[data-theme="sticker"] .dp-done { background: var(--k); color: #fff; border-radius: 999px; min-height: 44px; margin: 2px 4px 2px 0; font-weight: 600; }
+html[data-theme="sticker"] .dp-live { color: var(--k); font-weight: 600; }
+html[data-theme="sticker"] .dp-band { background: var(--sun-light); border: 2.5px solid var(--k); box-shadow: 2px 2px 0 var(--k); }
+html[data-theme="sticker"] .dp-item.is-sel { font-weight: 700; }
+html[data-theme="sticker"] .dp-item.is-off { color: #7d85a6; }
+html[data-theme="sticker"] .dp-wheel:focus-visible { outline-color: var(--k); }

@@ -4,6 +4,7 @@ import { useStore } from "@/lib/store";
 import { addDays, eachDay, fmtShort, money, plural } from "@/lib/dates";
 import { Art, Icon } from "@/components/Icons";
 import { CASE } from "@/components/art";
+import DatePicker from "@/components/DatePicker";
 
 export default function BreakPage() {
   const { state, today, addBreak, endBreak, removeBreak } = useStore();
@@ -31,14 +32,14 @@ export default function BreakPage() {
 
       <section className="card form">
         <p className="muted">No milk during a break. Those days aren't counted.</p>
-        <label className="field">
+        <div className="field">
           <span className="field-l">From</span>
-          <span className="field-box"><Icon name="cal" size={20} stroke={1.9} /><input type="date" value={from} onChange={(e) => e.target.value && setFrom(e.target.value)} /></span>
-        </label>
-        <label className={"field" + (open ? " off" : "")}>
+          <span className="field-box"><Icon name="cal" size={20} stroke={1.9} /><DatePicker label="From" value={from} onChange={(v) => { setFrom(v); if (to < v) setTo(v); }} /></span>
+        </div>
+        <div className={"field" + (open ? " off" : "")}>
           <span className="field-l">Last day</span>
-          <span className="field-box"><Icon name="cal" size={20} stroke={1.9} /><input type="date" value={to} min={from} disabled={open} onChange={(e) => e.target.value && setTo(e.target.value)} /></span>
-        </label>
+          <span className="field-box"><Icon name="cal" size={20} stroke={1.9} /><DatePicker label="Last day" value={to} min={from} disabled={open} onChange={setTo} /></span>
+        </div>
         <label className="check">
           <input type="checkbox" checked={open} onChange={(e) => setOpen(e.target.checked)} />
           I don't know the end date yet

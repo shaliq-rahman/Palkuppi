@@ -6,6 +6,7 @@ import { amountDue, previewAfter, round2, takenDays } from "@/lib/calc";
 import { fmtDay, fmtShort, money, plural } from "@/lib/dates";
 import { Art, Icon } from "@/components/Icons";
 import { WAVE } from "@/components/art";
+import DatePicker from "@/components/DatePicker";
 
 type Choice = "full" | "half" | "other";
 
@@ -27,16 +28,17 @@ export default function PayPage() {
     if (pay(amount, paidOn)) router.push("/");
   };
 
-  const opt = (id: Choice, title: string, value: string) => (
-    <label className={"opt" + (choice === id ? " on" : "")} key={id}>
-      <input type="radio" name="amt" checked={choice === id} onChange={() => setChoice(id)} />
-      <span className="opt-title">{title}</span>
+  const pill = (id: Choice, title: string, value: string) => (
+    <label className={"pill" + (choice === id ? " on" : "")} key={id}>
+      <input type="radio" name="amt" className="sr-only" checked={choice === id} onChange={() => setChoice(id)} />
+      <span className="pill-t">{title}</span>
       {id === "other" ? (
-        <span className="opt-input">₹
-          <input type="number" inputMode="decimal" min={0} max={due} step="0.5" placeholder="—" value={other}
+        <span className="pill-input">
+          <span aria-hidden="true">₹</span>
+          <input type="number" inputMode="decimal" min={0} max={due} step="0.5" placeholder="Enter" value={other}
             onFocus={() => setChoice("other")} onChange={(e) => { setChoice("other"); setOther(e.target.value); }} aria-label="Other amount" />
         </span>
-      ) : <span className="opt-value">{value}</span>}
+      ) : <span className="pill-v">{value}</span>}
     </label>
   );
 
@@ -66,18 +68,18 @@ export default function PayPage() {
         <>
           <fieldset className="opts">
             <legend>How much did you pay?</legend>
-            <div className="card opts-card">
-              {opt("full", "Full amount", money(due))}
-              {opt("half", "Half", money(half))}
-              {opt("other", "Other amount", "")}
+            <div className="opts-row">
+              {pill("full", "Full", money(due))}
+              {pill("half", "Half", money(half))}
+              {pill("other", "Other", "")}
             </div>
           </fieldset>
 
           <div className="card kv">
-            <label className="kv-row" htmlFor="paidOn">
+            <div className="kv-row">
               <span className="kv-k"><Icon name="cal" size={20} stroke={1.9} />Paid on</span>
-              <input id="paidOn" type="date" className="date-input" value={paidOn} max={today} onChange={(e) => e.target.value && setPaidOn(e.target.value)} />
-            </label>
+              <DatePicker className="dp-right" label="Paid on" value={paidOn} max={today} onChange={setPaidOn} />
+            </div>
             <div className="kv-row"><span className="kv-k">Paying now</span><span className="kv-v">{money(p.pay)}</span></div>
             <div className="kv-row"><span className="kv-k">Balance after</span><span className="kv-v green">{money(p.after)}</span></div>
           </div>
@@ -91,7 +93,7 @@ export default function PayPage() {
       )}
 
       {state.payments.length > 0 && (
-        <section className="card hist">
+        <section className="card hist pay-hist">
           <div className="card-title">Past payments</div>
           {state.payments.slice(0, 6).map((x) => (
             <div className="hist-row" key={x.id}>

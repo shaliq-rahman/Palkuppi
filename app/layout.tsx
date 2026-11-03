@@ -8,8 +8,13 @@ import AuthGate from "@/components/AuthGate";
 export const metadata: Metadata = {
   title: "Palkuppi",
   description: "Palkuppi: track your daily milk and what you owe the milkman.",
+  applicationName: "Palkuppi",
+  // iOS "Add to Home Screen": open full-screen like a native app, with the Palkuppi name and icon.
+  appleWebApp: { capable: true, title: "Palkuppi", statusBarStyle: "default" },
+  formatDetection: { telephone: false },
+  icons: { apple: "/icons/apple-touch-180.png" },
 };
-export const viewport: Viewport = { themeColor: "#3E82E3", width: "device-width", initialScale: 1, viewportFit: "cover" };
+export const viewport: Viewport = { themeColor: "#AEC3FA", width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

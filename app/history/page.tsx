@@ -97,7 +97,7 @@ export default function HistoryPage() {
           <>
             <div className="mb-text"><b>{takenCount} {takenCount === 1 ? "day" : "days"} taken · {money(takenCount * state.rate)}</b><span>Paid {money(paid)} this month</span></div>
             <button className="btn btn-primary btn-xs" disabled={toMark.length === 0} onClick={() => setConfirm(true)}>
-              <Icon name="check" size={15} stroke={2.8} />{toMark.length === 0 ? "All marked" : "Mark month taken"}
+              <Icon name="check" size={15} stroke={2.8} />{toMark.length === 0 ? "All marked" : "Mark all"}
             </button>
           </>
         )}
