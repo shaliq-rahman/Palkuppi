@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Palkuppi",
   description: "Palkuppi: track your daily milk and what you owe the milkman.",
 };
-export const viewport: Viewport = { themeColor: "#3E82E3", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#3E82E3", width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (

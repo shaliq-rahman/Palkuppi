@@ -10,6 +10,11 @@ import { CLOUDS, FLOWERS, PASTURE, WAVE } from "@/components/art";
 
 const CUTOFF_MIN = 10 * 60 + 30; // 10:30 AM
 
+function greeting(now: Date) {
+  const h = now.getHours();
+  return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening";
+}
+
 function cutoffText(now: Date) {
   const mins = CUTOFF_MIN - (now.getHours() * 60 + now.getMinutes());
   if (mins <= 0) return "after 10:30 AM";
@@ -59,7 +64,7 @@ export default function TodayPage() {
       <header className="head">
         <div>
           <div className="eyebrow">{fmtLong(now)}</div>
-          <h1 className="h1">Good Morning</h1>
+          <h1 className="h1">{greeting(now)}</h1>
         </div>
       </header>
 
