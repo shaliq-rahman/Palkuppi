@@ -16,3 +16,8 @@ next-env.d.ts
 
 # local copy of the Firebase web config
 appconfig
+
+# local copies of env/secrets
+envfile
+envfile*
+*.env.txt
